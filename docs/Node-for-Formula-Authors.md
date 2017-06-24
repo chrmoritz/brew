@@ -72,6 +72,12 @@ This will install your Node module in npm's global module style with a custom pr
 bin.install_symlink Dir["#{libexec}/bin/*"]
 ```
 
+*Note:* If your module requires a (dev)dependencies to to present at npm prepublish time, you have to invoke `std_npm_install_args` with `prepublish_requires_deps` set to `true` like:
+
+```ruby
+system "npm", "install", *Language::Node.std_npm_install_args(libexec, prepublish_requires_deps = true)
+```
+
 ### Installing module dependencies locally with `local_npm_install_args`
 
 In your formula's `install` method, do any installation steps which need to be done before the `npm install` step and then `cd` to the top level of the included Node module. Then, use `system` with `Language::Node.local_npm_install_args` to invoke `npm install` like:
