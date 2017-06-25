@@ -4,7 +4,7 @@ module Language
       "cache=#{HOMEBREW_CACHE}/npm_cache\n"
     end
 
-    def self.pack_for_installation(prepublish_requires_deps)
+    def self.pack_for_installation(prepublish_requires_deps, pack_skip_prepublish)
       # Some packages are requiring (dev)dependencies to be in place when
       # running the prepublish script (which is run before pack). In this case
       # we have to install all dependencies a first time already before
@@ -16,7 +16,7 @@ module Language
       # fed to `npm install` only symlinks are created linking back to that
       # directory, consequently breaking that assumption. We require a tarball
       # because npm install creates a "real" installation when fed a tarball.
-      output = Utils.popen_read("npm pack")
+      output = Utils.popen_read("npm pack" + (pack_skip_prepublish ? " --ignore-scripts" : ""))
       unless $CHILD_STATUS.exitstatus.zero? && !output.lines.empty?
         raise "npm failed to pack #{Dir.pwd}"
       end
@@ -40,13 +40,13 @@ module Language
       end
     end
 
-    def self.std_npm_install_args(libexec, prepublish_requires_deps = false)
+    def self.std_npm_install_args(libexec, prepublish_requires_deps = false, pack_skip_prepublish = false)
       setup_npm_environment
       # tell npm to not install .brew_home by adding it to the .npmignore file
       # (or creating a new one if no .npmignore file already exists)
       open(".npmignore", "a") { |f| f.write("\n.brew_home\n") }
 
-      pack = pack_for_installation(prepublish_requires_deps)
+      pack = pack_for_installation(prepublish_requires_deps, pack_skip_prepublish)
 
       # npm install args for global style module format installed into libexec
       %W[
