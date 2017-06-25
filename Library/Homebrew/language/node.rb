@@ -50,7 +50,7 @@ module Language
 
       # npm install args for global style module format installed into libexec
       %W[
-        --verbose
+        --ddd
         --global
         --prefix=#{libexec}
         #{Dir.pwd}/#{pack}
@@ -60,7 +60,9 @@ module Language
     def self.local_npm_install_args
       setup_npm_environment
       # npm install args for local style module format
-      ["--verbose"]
+      %W[
+        --ddd
+      ]
     end
   end
 end
