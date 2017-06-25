@@ -24,13 +24,9 @@ module Language
     end
 
     def self.setup_npm_environment
-      npmrc = Pathname.new("#{ENV["HOME"]}/.npmrc")
-      # only run setup_npm_environment once per formula
-      return if npmrc.exist?
-      # explicitly set npm's cache path to HOMEBREW_CACHE/npm_cache to fix
-      # issues caused by overriding $HOME (long build times, high disk usage)
-      # https://github.com/Homebrew/brew/pull/37#issuecomment-208840366
-      npmrc.write npm_cache_config
+      # guard that this is only run once
+      return if @env_set
+      @env_set = true
       # explicitly use our npm and node-gyp executables instead of the user
       # managed ones in HOMEBREW_PREFIX/lib/node_modules which might be broken
       begin
@@ -53,6 +49,7 @@ module Language
         --ddd
         --global
         --prefix=#{libexec}
+        --#{npm_cache_config}
         --build-from-source
         #{Dir.pwd}/#{pack}
       ]
@@ -63,6 +60,7 @@ module Language
       # npm install args for local style module format
       %W[
         --ddd
+        --#{npm_cache_config}
         --build-from-source
       ]
     end
