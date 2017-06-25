@@ -53,6 +53,7 @@ module Language
         --ddd
         --global
         --prefix=#{libexec}
+        --build-from-source
         #{Dir.pwd}/#{pack}
       ]
     end
@@ -62,6 +63,7 @@ module Language
       # npm install args for local style module format
       %W[
         --ddd
+        --build-from-source
       ]
     end
   end
