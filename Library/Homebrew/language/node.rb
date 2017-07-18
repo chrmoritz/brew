@@ -8,12 +8,13 @@ module Language
 
     def self.node_system(cmd, *args)
       ohai "#{cmd} #{args * " "}"
-      if ARGV.verbose?
-        safe_system(cmd, *args)
-      else
-        quiet_system(cmd, *args)
-        raise ErrorDuringExecution.new(cmd, args) unless $CHILD_STATUS.exitstatus.zero?
+      Homebrew._system(cmd, *args) do
+        unless ARGV.verbose?
+          $stdout.reopen("/dev/null")
+          $stderr.reopen("/dev/null")
+        end
       end
+      raise ErrorDuringExecution.new(cmd, args) unless $CHILD_STATUS.success?
     end
 
     # Read https://gist.github.com/chrmoritz/34e4c4d7779d72b549e2fc41f77c365c
