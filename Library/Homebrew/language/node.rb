@@ -75,20 +75,27 @@ module Language
         -ddd
         --global
         --build-from-source
+        --no-audit
+        --production
         --#{npm_cache_config}
         --prefix=#{libexec}
         #{Dir.pwd}/#{pack}
       ]
     end
 
-    def self.local_npm_install_args
+    def self.local_npm_install_args(prepare_required: true)
       setup_npm_environment
+
       # npm install args for local style module format
-      %W[
+      npm_args = %W[
         -ddd
         --build-from-source
+        --no-audit
         --#{npm_cache_config}
       ]
+      npm_args << "--production" unless prepare_required
+
+      npm_args
     end
   end
 end
